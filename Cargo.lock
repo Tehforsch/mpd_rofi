@@ -181,7 +181,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "music_selection"
+name = "mpd_rofi"
 version = "0.1.0"
 dependencies = [
  "clap",
