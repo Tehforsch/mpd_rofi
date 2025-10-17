@@ -182,6 +182,17 @@ impl MpdClient {
             }
         }
 
+        // Handle the last song if it wasn't processed due to missing file: line
+        if !current_title.is_empty() {
+            if artist.is_none() && album.is_none() {
+                // Return format "artist\ttitle" for all songs
+                songs.push(format!("{}\t{}", current_artist, current_title));
+            } else {
+                // Return just title for specific album
+                songs.push(current_title);
+            }
+        }
+
         Ok(songs)
     }
 
@@ -554,18 +565,10 @@ impl MusicSelector {
 
         let playlist_items: Vec<String> = playlist
             .iter()
-            .enumerate()
-            .map(|(_i, track)| {
-                let artist = if track.artist.is_empty() {
-                    "Unknown Artist"
-                } else {
-                    &track.artist
-                };
-                let title = if track.title.is_empty() {
-                    "Unknown Title"
-                } else {
-                    &track.title
-                };
+            .filter(|track| !track.artist.is_empty() && !track.title.is_empty())
+            .map(|track| {
+                let artist = &track.artist;
+                let title = &track.title;
 
                 let display_title = if let Some(track_num) = &track.track {
                     let track_num = track_num.split('/').next().unwrap_or(track_num);
